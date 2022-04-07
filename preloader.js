@@ -8,12 +8,12 @@ class BasePreloader {
         this.onload()
     }
 
-    onload() {
+     onload() {
         this.timerId= setInterval(()=>{
             this.step()
             if(this.condition()) {
                 clearInterval(this.timerId)
-            }
+            } 
             this.rootDiv.innerHTML = this.render()
         }, /*500*/ this.speed)  // different speed
     }
@@ -21,7 +21,7 @@ class BasePreloader {
     //abstract methods 
     condition() {
         throw new ReferenceError("You must implement the condition() method inside the inheriting class")}
-        // ReferenceError is thrown if a variable is use but not declared.
+        // ReferenceError is thrown if a variable is used but not declared.
     step() {}
     render() {}
     init() {}
@@ -31,6 +31,7 @@ class ProgressPreloader extends BasePreloader {
     constructor(rootDiv) {
         super(rootDiv)
     }
+    
     //overriding methods
     init() {
         this.progress = 0
@@ -83,24 +84,30 @@ class BacwardCircularPreloader extends BasePreloader {
     }
     step() {
         this.duration -= 250
-        // let frame = this.frames.pop()
-        // this.frames.unshift(frame)
         let frame = this.frames.splice(0, 1)
         this.frames.splice(3, 1, `${frame}`)
-
-
     }
     render() {
         return `[ ${this.frames[0]} ]`
     }
 }
 
-class IncompletePreloader extends ProgressPreloader {
-    constructor(rootDiv) {
-        super(rootDiv)
+class IncompletePreloader extends BasePreloader {
+        constructor(rootDiv) {
+            super(rootDiv)
+        }
+        //overriding methods
+        init() {
+            this.progress = 0
+            this.speed  = 1500
+        }
+        step() {
+            this.progress += 10
+        }
+        render() {
+            return ` ${this.progress}% `
+        }
     }
-    condition(){} // override with an empty condition, the timer will not acces the clearInterval and will go forever. 
-}
  
 ///////////////////////////////////////
 let p1  = new ProgressPreloader(window['prel-1']);
